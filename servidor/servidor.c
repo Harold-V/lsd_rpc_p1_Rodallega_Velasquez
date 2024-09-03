@@ -6,6 +6,7 @@
 
 #include "InterfaceClienteServidorModulos.h"
 #include <stdbool.h>
+#include <string.h>
 
 struct modulo
 {
@@ -34,5 +35,38 @@ nodo_turno *generarturno_1_svc(char **argp, struct svc_req *rqstp)
 
 	int posicion = consultarNumeroModulosDisponible();
 	printf("\n");
+	if (posicion == -1)
+	{
+		printf("\n Los modulos se encuentran ocupados");
+		strcpy(filaVirtual[cantidadUsuariosFila].identificacionUsuario, *argp);
+		cantidadUsuariosFila++;
+		printf("\n El usuario se agrego a la fila virtual");
+	}
+	else
+	{
+		printf("\n El modulo de la posicion %d esta libre y se asiganra al usuario con identificacion %s", (posicion + 1), *argp);
+		vectorModulo[posicion].ocupado = true;
+		vectorModulo[posicion].numeroTurno = numeroTurno;
+		strcpy(vectorModulo[posicion].identificacionUsuario, *argp);
+	}
+	result.numeroTurno = numeroTurno;
+	result.cantidadUsuariosFilaVirtual = cantidadUsuariosFila;
+	strcpy(result.identificacionUsuario, *argp);
+	numeroTurno++;
+	printf("\n");
 	return &result;
+}
+
+int consultarNumeroModulosDisponible()
+{
+	int posicion = -1;
+	for (int i = 0; i < 3; i++)
+	{
+		if (vectorModulo[i].ocupado == false)
+		{
+			posicion = i;
+			break;
+		}
+	}
+	return posicion;
 }
